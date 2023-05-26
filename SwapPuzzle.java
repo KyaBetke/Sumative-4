@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -8,6 +9,7 @@ public class SwapPuzzle {
     public static void main(String[] args) {
         //
         System.out.print("\033[H\033[2J"); // clear screen
+        System.out.println("Please enter the size of game you want. Ex. \"5\" will make a 5 x 5 grid.");
         Scanner sc = new Scanner(System.in);
         int gameSize = Integer.parseInt(sc.nextLine());
         System.out.println();
@@ -115,12 +117,26 @@ public class SwapPuzzle {
     // }
 
 
-    // public static int[] findAllowedNumbers(int[][] board, int dimension) {
-    // int[] coordinates = findPosition(0, board);
-    // // - find the position of 0 and use it to find all the other numbers the user
-    // is
-    // // allowed to select
-    // }
+    public static  ArrayList <Integer> findAllowedNumbers(int[][] board, int dimension) {
+        ArrayList <Integer> numbers = new ArrayList<Integer>();
+        int[] coordinates = findPosition(0, board);
+        int x = coordinates[0];
+        int y = coordinates[1];
+        if(x > 0){
+            numbers.add(coordinates[x-1]);
+        } if (x < dimension){
+            numbers.add(coordinates[x + 1]);
+        }if (y > 0){
+            numbers.add(coordinates[y - 1]);
+        }if (y < dimension){
+            numbers.add(coordinates[y+1]);
+        }
+       
+        return numbers;
+    }
+        
+    // - find the position of 0 and use it to find all the other numbers the user is allowed to select
+    }
 
 
     // public static boolean isValidSelection(int[] allowedNumber, int
@@ -133,7 +149,8 @@ public class SwapPuzzle {
     // public static boolean isComplete(int[][]board);
 
 
-}
+
+
 
 
 
