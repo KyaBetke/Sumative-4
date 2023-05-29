@@ -4,30 +4,48 @@ import java.util.Scanner;
 
 
 public class SwapPuzzle {
+    public static Scanner sc;
 
 
     public static void main(String[] args) {
-        //
+        sc = new Scanner(System.in);
         System.out.print("\033[H\033[2J"); // clear screen
-        System.out.println("Please enter the size of game you want. Ex. \"5\" will make a 5 x 5 grid.");
-        Scanner sc = new Scanner(System.in);
-        int gameSize = Integer.parseInt(sc.nextLine());
+        System.out.println("Please enter the size of game you want. \n(Ex. \"5\" will make a 5 x 5 grid.)");
+       
+        int gameSize = getNumber();
         System.out.println();
-        int[][] createArray = createBoard(gameSize);
-        // int square = gameSize * gameSize;
+        int[][] board = createBoard(gameSize);
+       
 
 
-        printBoard(createArray);
+        printBoard(board);
         /*
          * loop until done
          * find allowed numbers
          * ask user to chose
+         * validate selection
          * swap numbers
          * check if done
          * if done, exit somehow
          * else print board
          * repeat
          */
+        while (true) {
+            ArrayList<Integer> allowed = findAllowedNumbers(board);
+            System.out.println("Which number would you like to move?\n" + allowed.toString() + "\n");
+            int playerChoice = getNumber();
+            if (isValidSelection(allowed, playerChoice)) {
+                swapPosition(playerChoice, board);
+                printBoard(board);
+            }
+
+
+            if (isComplete(board)) {
+                break;
+            }
+           
+        }
+        sc.close();
 
 
     }
@@ -64,7 +82,8 @@ public class SwapPuzzle {
             randomArray[randSwap] = randomArray[i];
             randomArray[i] = temp;
         }
-        // System.out.println(Arrays.toString(randomArray));
+
+
         return randomArray;
         // - load the single dimension array by swaping numbers
         // - called by createBoard
@@ -79,7 +98,7 @@ public class SwapPuzzle {
                 if (board[i][j] == 0) {
                     System.out.printf(" %3s ", " ");
                 } else {
-                    System.out.printf(" %3s ",board[i][j]);
+                    System.out.printf(" %3s ", board[i][j]);
                 }
 
 
@@ -91,11 +110,11 @@ public class SwapPuzzle {
 
     public static int[] findPosition(int number, int[][] board) {
         boolean breakLoop = false;
-        int[] coorodinates = new int[2];
+        int[] coordinates = new int[2];
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == 0) {
-                    coorodinates = new int[] { i, j };
+                if (board[i][j] == number) {
+                    coordinates = new int[] { i, j };
                     breakLoop = true;
                     break;
                 }
@@ -108,49 +127,98 @@ public class SwapPuzzle {
         }
 
 
-        return coorodinates;
+        return coordinates;
     }
 
 
-    // public static void swapPosition(int number, int[][] board) {
-    // // int[] coordinates = findPosition(0, board);
-    // }
-
-
-    public static  ArrayList <Integer> findAllowedNumbers(int[][] board, int dimension) {
-        ArrayList <Integer> numbers = new ArrayList<Integer>();
+    public static ArrayList<Integer> findAllowedNumbers(int[][] board) {
+        ArrayList<Integer> numbers = new ArrayList<Integer>();
         int[] coordinates = findPosition(0, board);
         int x = coordinates[0];
         int y = coordinates[1];
-        if(x > 0){
-            numbers.add(coordinates[x-1]);
-        } if (x < dimension){
-            numbers.add(coordinates[x + 1]);
-        }if (y > 0){
-            numbers.add(coordinates[y - 1]);
-        }if (y < dimension){
-            numbers.add(coordinates[y+1]);
+        if (x > 0) {
+            numbers.add(board[x - 1][y]);
         }
-       
+        if (x < board.length - 1) {
+            numbers.add(board[x + 1][y]);
+        }
+        if (y > 0) {
+            numbers.add(board[x][y - 1]);
+        }
+        if (y < board.length - 1) {
+            numbers.add(board[x][y + 1]);
+        }
+
+
         return numbers;
     }
-        
-    // - find the position of 0 and use it to find all the other numbers the user is allowed to select
+
+
+    public static void swapPosition(int number, int[][] board) {
+
+
+        int[] zero = findPosition(0, board);
+        int[] swapNum = findPosition(number, board);
+
+
+        board[zero[0]][zero[1]] = number;
+        board[swapNum[0]][swapNum[1]] = 0;
     }
 
 
-    // public static boolean isValidSelection(int[] allowedNumber, int
-    // selectedNumber) {
-    // // - validation method to determine if the user has selected an allowed
-    // number)
-    // }
+    public static boolean isComplete(int[][] board) {
 
 
-    // public static boolean isComplete(int[][]board);
+        ArrayList<Integer> numbers = new ArrayList<Integer>();
+        for (int i = 0; i < board.length; i++) {
 
 
+            for (int j = 0; j < board[i].length; j++) {
 
 
+                numbers.add(board[i][j]);
+            }
+        }
+
+
+        for (int i = 0; i < numbers.size() - 2; i++) {
+            if (numbers.get(i) != i + 1) {
+                return false;
+            }
+        }
+        return true;
+
+
+    }
+
+
+    public static boolean isValidSelection(ArrayList<Integer> allowedNumber, int selectedNumber) {
+        for (int i = 0; i < allowedNumber.size(); i++) {
+            if (allowedNumber.get(i) == selectedNumber) {
+                return true;
+            }
+        }
+        System.out.println("\nInvalid");
+        return false;
+
+
+        // - validation method to determine if the user has selected an allowed
+        // number)
+    }
+   
+    public static int getNumber(){
+       
+        int playerChoice = 0;
+        try{
+            playerChoice = Integer.parseInt(sc.nextLine());
+           
+        } catch (NumberFormatException e){
+            System.out.println("This is not a number. Please try again.");
+            playerChoice = getNumber();
+        }
+        return playerChoice;
+    }
+}
 
 
 
